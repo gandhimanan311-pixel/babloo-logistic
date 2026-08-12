@@ -38,7 +38,9 @@
             timestamp: Date.now()
         };
 
-        set(ref(db, 'orders/' + orderId), orderData);
+        const uniqueKey = "order_" + Date.now();
+orderData.orderId = orderId; 
+set(ref(db, 'orders/' + uniqueKey), orderData);
         
         const searchingModal = document.getElementById('searchingModal');
         if(searchingModal) searchingModal.classList.remove('hidden');
