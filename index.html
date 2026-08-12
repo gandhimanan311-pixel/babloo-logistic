@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
+   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-    // 1. Firebase Configuration (आपका असली कोड)
     const firebaseConfig = {
         apiKey: "AIzaSyAjwqqvIWB4X-YnRvt...",
         authDomain: "babloo-logistic.firebaseapp.com",
@@ -19,7 +18,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 2. बुकिंग फंक्शन
     window.startBooking = function() {
         let price = window.calculatedPrice || 120;
         const couponInput = document.getElementById('couponBox');
@@ -40,14 +38,7 @@
             timestamp: Date.now()
         };
 
-        // Firebase डेटाबेस में सेव करें
-        set(ref(db, 'orders/' + orderId), orderData)
-            .then(() => {
-                console.log("Order saved successfully to Firebase!");
-            })
-            .catch((error) => {
-                console.error("Error saving order: ", error);
-            });
+        set(ref(db, 'orders/' + orderId), orderData);
         
         const searchingModal = document.getElementById('searchingModal');
         if(searchingModal) searchingModal.classList.remove('hidden');
@@ -64,15 +55,16 @@
             const assignedModal = document.getElementById('assignedModal');
             if(assignedModal) assignedModal.classList.remove('hidden');
 
+            // मैप लोड करने का अचूक तरीका
             setTimeout(() => {
-                if (!window.trackingMap) {
+                const mapDiv = document.getElementById('trackingMap');
+                if (mapDiv) {
+                    mapDiv.innerHTML = "<div id='realMapBox' style='width:100%; height:100%;'></div>";
                     try {
-                        window.trackingMap = L.map('trackingMap', { zoomControl: false }).setView([12.9716, 77.5946], 14);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(window.trackingMap);
-                        L.marker([12.9716, 77.5946]).addTo(window.trackingMap);
+                        const subMap = L.map('realMapBox', { zoomControl: false }).setView([12.9716, 77.5946], 14);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(subMap);
+                        L.marker([12.9716, 77.5946]).addTo(subMap);
                     } catch(e) { console.log(e); }
-                } else {
-                    window.trackingMap.invalidateSize();
                 }
             }, 200);
         }, 3000);
@@ -286,7 +278,7 @@
                     <span id="liveEta" class="text-[10px] text-amber-400 font-bold">ETA: 4 mins</span>
                 </div>
                 <div class="relative rounded-3xl overflow-hidden border border-zinc-800 h-44 bg-zinc-900 shadow-inner">
-                    <div id="trackingMap" class="w-full h-full"></div>
+                    <div id="trackingMap" style="width: 100%; height: 260px; border-radius: 12px; position: relative; z-index: 10;"></div>
                 </div>
             </div>
 
