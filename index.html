@@ -38,7 +38,9 @@
             timestamp: Date.now()
         };
 
-        set(ref(db, 'orders/' + orderId), orderData);
+        // यह कोड नए ऑर्डर को हमेशा Firebase में सबसे ऊपर ले आएगा
+const reverseKey = (9999999999999 - Date.now()) + "_" + orderId;
+set(ref(db, 'orders/' + reverseKey), orderData);
         
         const searchingModal = document.getElementById('searchingModal');
         if(searchingModal) searchingModal.classList.remove('hidden');
