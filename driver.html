@@ -444,15 +444,12 @@
     <script type="module">
     import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-    // यहाँ हम Firebase का Database एक्सेस कर रहे हैं
     const db = getDatabase(); 
-
-    // यह कोड डेटाबेस से लाइव ऑर्डर्स को ऑटोमैटिकली उठाता रहेगा
     const ordersRef = ref(db, 'orders');
+
     onValue(ordersRef, (snapshot) => {
         const data = snapshot.val();
-        // यहाँ अपनी उस ID का नाम लिखें जो ऑर्डर्स दिखाने वाले बॉक्स की है
-        const container = document.getElementById('ordersListContainer'); 
+        const container = document.getElementById('ordersListContainer');
         
         if (!data) {
             if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
@@ -462,17 +459,39 @@
         let html = '';
         Object.keys(data).forEach(orderId => {
             const order = data[orderId];
+            
+            // अगर आर्डर पेंडिंग है, तो ड्राइवर को एक्सेप्ट करने का बटन दिखेगा
             if(order.status === "PENDING") {
                 html += `
-                    <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg">
-                        <div class="flex justify-between items-center mb-2">
+                    <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2">
+                        <div class="flex justify-between items-center">
                             <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
                             <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
                         </div>
                         <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                        <p class="text-xs text-zinc-400 mb-3">Customer: ${order.customerName}</p>
-                        <button onclick="acceptOrder('${orderId}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
-                            ACCEPT RIDE
+                        <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
+                        <div class="flex space-x-2 mt-3">
+    <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
+        REJECT
+    </button>
+    <button onclick="updateOrderStatus('${orderId}', 'ACCEPTED')" class="w-1/2 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
+        ACCEPT RIDE
+    </button>
+</div>
+                    </div>
+                `;
+            } 
+            // अगर ड्राइवर ने राइड एक्सेप्ट कर ली है, तो आगे के एक्शंस दिखेंगे
+            else if(order.status === "ACCEPTED") {
+                html += `
+                    <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
+                            <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
+                        </div>
+                        <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                        <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
+                            COMPLETE RIDE
                         </button>
                     </div>
                 `;
@@ -480,16 +499,16 @@
         });
         
         if(container) {
-            container.innerHTML = html || "<p class='text-zinc-400 p-4'>No pending orders.</p>";
+            container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
         }
     });
 
-    // आर्डर एक्सेप्ट करने का फंक्शन
-    window.acceptOrder = function(orderId) {
+    // डेटाबेस में आर्डर का स्टेटस अपडेट करने का कॉमन फंक्शन
+    window.updateOrderStatus = function(orderId, newStatus) {
         update(ref(db, 'orders/' + orderId), {
-            status: "ACCEPTED"
+            status: newStatus
         }).then(() => {
-            alert("Ride Accepted! Now navigate to pickup.");
+            alert("Order status updated to: " + newStatus);
         });
     }
 </script>
