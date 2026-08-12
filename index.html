@@ -2,23 +2,81 @@
 <html lang="en">
 <head>
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAjwqqvIWB4X-YnRvtnm5iu186k7F9okc8",
-    authDomain: "babloo-logistic.firebaseapp.com",
-    projectId: "babloo-logistic",
-    storageBucket: "babloo-logistic.firebasestorage.app",
-    messagingSenderId: "786182652878",
-    appId: "1:786182652878:web:1a275fb79220a5489ee19f"
-  };
+    // 1. Firebase Configuration (आपका असली कोड)
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjwqqvIWB4X-YnRvt...",
+        authDomain: "babloo-logistic.firebaseapp.com",
+        databaseURL: "https://babloo-logistic-default-rtdb.firebaseio.com",
+        projectId: "babloo-logistic",
+        storageBucket: "babloo-logistic.appspot.com",
+        messagingSenderId: "786182652878",
+        appId: "1:786182652878:web:1a275fb79220a5489ee19f"
+    };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 2. बुकिंग फंक्शन
+    window.startBooking = function() {
+        let price = window.calculatedPrice || 120;
+        const couponInput = document.getElementById('couponBox');
+        if(couponInput && couponInput.value.trim().toUpperCase() === 'BABLOO') {
+            alert('🎉 Promo Code Applied! 10% Off');
+            price = Math.round(price * 0.9);
+        }
+        
+        const orderId = "BL-" + Math.floor(1000 + Math.random() * 9000);
+        const dropVal = document.getElementById('dropInput');
+        const orderData = {
+            orderId: orderId,
+            customerName: "Rahul Sharma",
+            vehicleType: window.currentVehicle || "Bike",
+            route: "Tech Square ➔ " + (dropVal ? dropVal.value : "Indiranagar"),
+            fare: price,
+            status: "PENDING",
+            timestamp: Date.now()
+        };
+
+        // Firebase डेटाबेस में सेव करें
+        set(ref(db, 'orders/' + orderId), orderData)
+            .then(() => {
+                console.log("Order saved successfully to Firebase!");
+            })
+            .catch((error) => {
+                console.error("Error saving order: ", error);
+            });
+        
+        const searchingModal = document.getElementById('searchingModal');
+        if(searchingModal) searchingModal.classList.remove('hidden');
+
+        setTimeout(() => {
+            if(searchingModal) searchingModal.classList.add('hidden');
+            
+            const assignedText = document.getElementById('assignedVehicleText');
+            if(assignedText) assignedText.innerText = (window.currentVehicle || "Bike") + " • KA 01 E 9821";
+            
+            const liveEta = document.getElementById('liveEta');
+            if(liveEta) liveEta.innerText = "ETA: 4 mins";
+            
+            const assignedModal = document.getElementById('assignedModal');
+            if(assignedModal) assignedModal.classList.remove('hidden');
+
+            setTimeout(() => {
+                if (!window.trackingMap) {
+                    try {
+                        window.trackingMap = L.map('trackingMap', { zoomControl: false }).setView([12.9716, 77.5946], 14);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(window.trackingMap);
+                        L.marker([12.9716, 77.5946]).addTo(window.trackingMap);
+                    } catch(e) { console.log(e); }
+                } else {
+                    window.trackingMap.invalidateSize();
+                }
+            }, 200);
+        }, 3000);
+    }
 </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
