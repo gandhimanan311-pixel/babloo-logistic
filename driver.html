@@ -448,55 +448,69 @@
     const ordersRef = ref(db, 'orders');
 
     onValue(ordersRef, (snapshot) => {
-        const data = snapshot.val();
-        const container = document.getElementById('ordersListContainer');
-        
-        if (!data) {
-            if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
-            return;
-        }
+    const data = snapshot.val();
+    const container = document.getElementById('ordersListContainer');
+    
+    if (!data) {
+        if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
+        return;
+    }
 
-        let html = '';
-        Object.keys(data).forEach(orderId => {
-            const order = data[orderId];
-            
-            // अगर आर्डर पेंडिंग है, तो ड्राइवर को एक्सेप्ट करने का बटन दिखेगा
-            if(order.status === "PENDING") {
-                html += `
-                    <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
-                            <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
-                        </div>
-                        <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                        <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
-                        <div class="flex space-x-2 mt-3">
-    <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
-        REJECT
-    </button>
-    <button onclick="updateOrderStatus('${orderId}', 'ACCEPTED')" class="w-1/2 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
-        ACCEPT RIDE
-    </button>
-</div>
+    let html = '';
+    
+    // यहाँ हमने ऑर्डर्स को सॉर्ट (Sort) कर दिया है ताकि नए ऑर्डर्स और एक्टिव राइड ऊपर रहें
+    const sortedKeys = Object.keys(data).sort((a, b) => {
+        const orderA = data[a];
+        const orderB = data[b];
+        // अगर कोई आर्डर ACCEPTED है, तो उसे सबसे ऊपर रखेंगे
+        if (orderA.status === "ACCEPTED" && orderB.status !== "ACCEPTED") return -1;
+        if (orderA.status !== "ACCEPTED" && orderB.status === "ACCEPTED") return 1;
+        return 0;
+    });
+
+    sortedKeys.forEach(orderId => {
+        const order = data[orderId];
+        
+        if(order.status === "PENDING") {
+            html += `
+                <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
+                        <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
                     </div>
-                `;
-            } 
-            // अगर ड्राइवर ने राइड एक्सेप्ट कर ली है, तो आगे के एक्शंस दिखेंगे
-            else if(order.status === "ACCEPTED") {
-                html += `
-                    <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2">
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
-                            <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
-                        </div>
-                        <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                        <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
-                            COMPLETE RIDE
+                    <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                    <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
+                    <div class="flex space-x-2 mt-3">
+                        <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
+                            REJECT
+                        </button>
+                        <button onclick="updateOrderStatus('${orderId}', 'ACCEPTED')" class="w-1/2 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
+                            ACCEPT RIDE
                         </button>
                     </div>
-                `;
-            }
-        });
+                </div>
+            `;
+        } 
+        else if(order.status === "ACCEPTED") {
+            html += `
+                <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
+                        <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                    <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
+                        COMPLETE RIDE
+                    </button>
+                </div>
+            `;
+        }
+    });
+    
+    if(container) {
+        container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
+    }
+});
         
         if(container) {
             container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
