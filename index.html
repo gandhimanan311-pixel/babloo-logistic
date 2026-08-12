@@ -38,7 +38,8 @@
             timestamp: Date.now()
         };
 
-        const uniqueKey = "order_" + Date.now();
+        const inverseTimestamp = 9999999999999 - Date.now();
+const uniqueKey = "order_" + inverseTimestamp;
 orderData.orderId = orderId; 
 set(ref(db, 'orders/' + uniqueKey), orderData);
         
