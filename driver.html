@@ -4,8 +4,6 @@
     <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -31,7 +29,6 @@
         .glass-card { background: rgba(15, 15, 22, 0.92); backdrop-filter: blur(20px); border: 1px solid rgba(255, 87, 34, 0.25); }
         .btn-orange { background: linear-gradient(135deg, #FF6D00 0%, #FF3D00 100%); box-shadow: 0 4px 25px rgba(255, 61, 0, 0.5); cursor: pointer; }
         
-        /* VFX Cinematic Background */
         .vfx-city-poster {
             background: linear-gradient(180deg, rgba(5,5,7,0.85) 0%, rgba(5,5,7,0.65) 50%, rgba(5,5,7,0.95) 100%), 
                         url('https://images.unsplash.com/photo-1508739773434-c26b3d09e071?q=80&w=1000&auto=format&fit=crop');
@@ -41,20 +38,15 @@
 
         .radar-pulse { animation: radar 2s infinite ease-out; }
         @keyframes radar { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-        .radar-ring { animation: ringPulse 2.5s infinite ease-out; }
-        @keyframes ringPulse { 0% { transform: scale(0.8); opacity: 0.9; } 100% { transform: scale(2.2); opacity: 0; } }
     </style>
 </head>
 <body class="flex justify-center items-center min-h-screen p-0 sm:p-4 bg-black">
 
-    <!-- MAIN APP CONTAINER -->
     <div class="w-full max-w-sm bg-[#0A0A0C] border border-zinc-800/90 rounded-[40px] overflow-hidden shadow-[0_0_50px_rgba(255,87,34,0.15)] h-[750px] flex flex-col relative">
         
-        <!-- 1. LOGIN & OVERLAY SECTION -->
+        <!-- LOGIN OVERLAY -->
         <div id="driverLoginOverlay" class="absolute inset-0 z-50 vfx-city-poster flex flex-col justify-between overflow-y-auto p-4">
-            
             <div class="space-y-4">
-                <!-- Header Bar -->
                 <div class="bg-black/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-zinc-800/80 flex justify-between items-center shadow-xl mt-1">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-[#FF5722] to-amber-500 p-0.5 flex items-center justify-center shadow-lg">
@@ -65,45 +57,37 @@
                     <span class="text-[8px] bg-emerald-950/90 text-emerald-400 border border-emerald-800/60 font-bold px-2 py-0.5 rounded-full">● Live Hiring</span>
                 </div>
 
-                <!-- Banner Tagline -->
                 <div class="px-2 space-y-1.5 text-left pt-2">
                     <span class="text-[9px] bg-[#FF5722] text-black font-black px-2.5 py-0.5 rounded-md uppercase tracking-wider">INDIA'S TOP FLEET</span>
                     <h2 class="text-lg font-black text-white leading-snug drop-shadow-lg">
                         हर रास्ते पर भरोसे की सवारी,<br>
                         <span class="text-[#FF5722]">बबलू</span> के संग कमाएं हर दिन भारी!
                     </h2>
-                    <div class="flex space-x-2 pt-1 text-[8px] font-bold">
-                        <div class="bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-lg border border-zinc-700/80 text-amber-400">💰 Up to ₹35,000/mo</div>
-                        <div class="bg-black/80 backdrop-blur-md px-2 py-0.5 rounded-lg border border-zinc-700/80 text-emerald-400">⚡ Instant Daily Payout</div>
-                    </div>
                 </div>
             </div>
 
-            <!-- LOGIN CARD STEP 1 -->
             <div id="driverLoginStep1" class="glass-card p-6 rounded-[32px] space-y-4 border border-[#FF5722]/40 shadow-2xl bg-black/90 my-auto">
                 <div class="text-center space-y-1">
                     <h3 class="text-sm font-black text-white uppercase tracking-wider">LOGIN TO DRIVER CONSOLE</h3>
                     <p class="text-[10px] text-zinc-400">Enter registered phone number to continue</p>
                 </div>
                 
-                <!-- Fixed: +91 is now pure white & pre-filled number removed -->
                 <div class="flex items-center bg-black border border-zinc-700 rounded-2xl px-4 py-3.5 focus-within:border-[#FF5722] shadow-inner">
                     <span class="text-base font-black text-white mr-3">+91</span>
-                    <input id="driverPhone" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Enter Mobile Number" value="" class="bg-transparent text-base text-white font-bold outline-none w-full tracking-wide">
+                    <input id="driverPhone" type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="Enter Mobile Number" class="bg-transparent text-base text-white font-bold outline-none w-full tracking-wide">
                 </div>
                 
-                <button type="button" onclick="sendDriverOtp()" class="w-full btn-orange text-black font-black py-3.5 rounded-2xl text-xs transition active:scale-95 uppercase tracking-wider text-sm">
+                <button type="button" onclick="sendDriverOtp()" class="w-full btn-orange text-black font-black py-3.5 rounded-2xl text-xs uppercase tracking-wider text-sm">
                     SEND OTP & START DUTY ➔
                 </button>
             </div>
 
-            <!-- OTP VERIFICATION STEP 2 -->
             <div id="driverLoginStep2" class="hidden glass-card p-6 rounded-[32px] space-y-4 border border-[#FF5722]/40 shadow-2xl bg-black/90 my-auto">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs font-black text-white uppercase tracking-wider">ENTER VERIFICATION OTP</h3>
                     <span class="text-[10px] text-emerald-400 font-bold bg-emerald-950 px-2 py-0.5 rounded-md">OTP: 8821</span>
                 </div>
-                <input id="driverOtpInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="• • • •" value="8821" class="w-full bg-black border border-zinc-700 rounded-2xl p-3.5 text-center text-xl tracking-[0.5em] font-black text-white outline-none focus:border-[#FF5722]">
+                <input id="driverOtpInput" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="4" value="8821" class="w-full bg-black border border-zinc-700 rounded-2xl p-3.5 text-center text-xl tracking-[0.5em] font-black text-white outline-none focus:border-[#FF5722]">
                 <button type="button" onclick="verifyDriverLogin()" class="w-full btn-orange text-black font-black py-3.5 rounded-2xl text-xs uppercase tracking-wider text-sm">
                     VERIFY & OPEN CONSOLE ➔
                 </button>
@@ -114,7 +98,7 @@
             </div>
         </div>
 
-        <!-- 2. MAIN APP DASHBOARD HEADER -->
+        <!-- MAIN DASHBOARD HEADER -->
         <div class="p-4 pb-3 border-b border-zinc-800/60 bg-[#0A0A0C] z-30 shrink-0">
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center space-x-2">
@@ -139,7 +123,7 @@
             </div>
 
             <div class="flex justify-between items-center mb-2 px-0.5">
-                <button onclick="openModal('sosConfirmModal')" class="bg-rose-950/80 border border-rose-600/60 text-rose-400 px-2.5 py-1 rounded-full text-[9px] font-black flex items-center space-x-1 hover:bg-rose-900 transition">
+                <button onclick="openModal('sosConfirmModal')" class="bg-rose-950/80 border border-rose-600/60 text-rose-400 px-2.5 py-1 rounded-full text-[9px] font-black flex items-center space-x-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping"></span>
                     <span>🆘 EMERGENCY SOS</span>
                 </button>
@@ -147,11 +131,11 @@
             </div>
 
             <div class="grid grid-cols-3 gap-2">
-                <div onclick="switchTab('wallet')" class="glass-card p-2 rounded-xl text-center cursor-pointer hover:border-[#FF5722] transition">
+                <div onclick="switchTab('wallet')" class="glass-card p-2 rounded-xl text-center cursor-pointer">
                     <p class="text-[8px] text-zinc-400 font-bold uppercase">Wallet ➔</p>
                     <p class="text-xs font-black text-[#FF5722]">₹1,250</p>
                 </div>
-                <div onclick="switchTab('trips')" class="glass-card p-2 rounded-xl text-center cursor-pointer hover:border-zinc-500">
+                <div onclick="switchTab('trips')" class="glass-card p-2 rounded-xl text-center cursor-pointer">
                     <p class="text-[8px] text-zinc-400 font-bold uppercase">Today Trips</p>
                     <p class="text-xs font-black text-white">8 Done</p>
                 </div>
@@ -162,20 +146,16 @@
             </div>
         </div>
 
-        <!-- 3. SCROLLABLE TAB BODY -->
+        <!-- TAB BODY -->
         <div class="flex-1 overflow-y-auto relative">
             
-            <!-- TAB 1: HOME -->
+            <!-- HOME TAB -->
             <div id="tab-home" class="p-4 space-y-3 pb-6">
                 <div class="relative rounded-3xl overflow-hidden border border-zinc-800/80 shadow-inner">
                     <div id="driverMap" class="h-44 w-full z-10"></div>
                     <div class="absolute top-2 left-2 bg-black/80 backdrop-blur-md px-3 py-1 rounded-full text-[9px] font-bold border border-zinc-700/60 z-20 flex items-center space-x-1.5">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                         <span class="text-emerald-400">High Booking Zone: Indiranagar</span>
-                    </div>
-                    <div class="absolute bottom-2 right-2 z-20 flex space-x-1">
-                        <button onclick="toggleSurgeHeatmap()" class="bg-amber-950/90 text-amber-400 border border-amber-700/60 text-[9px] font-bold px-2 py-1 rounded-lg">🔥 Heatmap</button>
-                        <button onclick="recenterMap()" class="bg-black/90 text-white text-[9px] font-bold px-2 py-1 rounded-lg border border-zinc-700">🎯 Center GPS</button>
                     </div>
                 </div>
 
@@ -185,68 +165,19 @@
                     <p class="text-[10px] text-zinc-400">Turn duty ON from top right button to receive trip requests.</p>
                 </div>
 
-                <!-- SEARCHING STATE -->
+                <!-- REALTIME ORDERS LIST CONTAINER -->
                 <div id="card-searching" class="space-y-3">
                     <div id="ordersListContainer" class="glass-card p-4 rounded-3xl border border-zinc-800/80 text-center relative overflow-hidden space-y-3 bg-[#121218]">
-    <div class="p-4 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-2"></div>
-        <h3 class="font-bold text-sm text-white">Listening for Live Orders...</h3>
-        <p class="text-[10px] text-zinc-400 mt-1">Keep this app open. New customer bookings will appear here automatically.</p>
-    </div>
-</div>
-
-                    <div class="glass-card p-3.5 rounded-2xl border border-amber-500/30 space-y-1.5 bg-gradient-to-r from-amber-500/10 to-transparent">
-                        <div class="flex justify-between items-center text-xs">
-                            <span class="font-bold text-amber-400 text-[10px]">🔥 Daily Incentive Target</span>
-                            <span class="font-black text-white text-[10px]">8/10 Trips Completed</span>
+                        <div class="p-4 text-center">
+                            <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-orange-500 border-t-transparent mb-2"></div>
+                            <h3 class="font-bold text-sm text-white">Listening for Live Orders...</h3>
+                            <p class="text-[10px] text-zinc-400 mt-1">Keep this app open. New customer bookings will appear here automatically.</p>
                         </div>
-                        <div class="w-full bg-zinc-800 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-amber-400 h-full w-[80%] rounded-full"></div>
-                        </div>
-                        <p class="text-[9px] text-zinc-400">Complete 2 more trips to unlock <strong class="text-amber-400">₹300 Cash Bonus</strong></p>
                     </div>
-                </div>
-
-                <!-- INCOMING ORDER CARD -->
-                <div id="card-incoming" class="hidden glass-card p-4 rounded-3xl border-l-4 border-[#FF5722] radar-pulse space-y-3">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[9px] bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full font-black">HIGH FARE ORDER</span>
-                            <h2 class="font-bold text-sm mt-1">Tech Square ➔ Indiranagar</h2>
-                        </div>
-                        <span class="font-black text-xl text-[#FF5722]">₹290</span>
-                    </div>
-                    <div class="flex space-x-2 pt-1">
-                        <button onclick="declineOrder()" class="flex-1 bg-zinc-900 text-zinc-300 font-bold py-3 rounded-2xl text-xs border border-zinc-800">Decline</button>
-                        <button onclick="setTripStep('navigating')" class="flex-1 btn-orange text-black font-black py-3 rounded-2xl text-xs">Accept Booking</button>
-                    </div>
-                </div>
-
-                <!-- NAVIGATING TO PICKUP -->
-                <div id="card-navigating" class="hidden glass-card p-4 rounded-3xl border border-zinc-800 space-y-3">
-                    <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2">
-                        <span class="text-[10px] font-black text-orange-400">STEP 1: NAVIGATE TO PICKUP</span>
-                        <button onclick="setTripStep('searching')" class="text-[10px] text-zinc-400 font-bold">← Cancel</button>
-                    </div>
-                    <h2 class="font-bold text-sm">Tech Square, Gate #3</h2>
-                    <button onclick="setTripStep('otp')" class="w-full btn-orange text-black font-black py-3.5 rounded-2xl text-xs">I HAVE ARRIVED AT PICKUP ➔</button>
-                </div>
-
-                <!-- CUSTOMER OTP STEP -->
-                <div id="card-otp" class="hidden glass-card p-4 rounded-3xl border border-zinc-800 space-y-3">
-                    <h2 class="font-bold text-sm">Enter Customer OTP</h2>
-                    <input id="otpCode" type="text" value="8821" class="w-full bg-black border border-zinc-700 rounded-xl p-3 text-center text-xl font-black text-white outline-none">
-                    <button onclick="verifyCustomerOtp()" class="w-full btn-orange text-black font-black py-3.5 rounded-2xl text-xs">VERIFY & START RIDE</button>
-                </div>
-
-                <!-- DELIVERING STEP -->
-                <div id="card-delivering" class="hidden glass-card p-4 rounded-3xl border border-emerald-500/40 space-y-3">
-                    <h2 class="font-bold text-sm">Trip in Progress: Indiranagar</h2>
-                    <button onclick="openRateCustomerModal()" class="w-full bg-emerald-500 text-black font-black py-3.5 rounded-2xl text-xs">COMPLETE TRIP ➔</button>
                 </div>
             </div>
 
-            <!-- TAB 2: TRIPS -->
+            <!-- TRIPS TAB -->
             <div id="tab-trips" class="hidden p-4 space-y-3 pb-6">
                 <div class="glass-card p-3.5 rounded-2xl border border-zinc-800 flex justify-between items-center text-xs">
                     <div>
@@ -255,19 +186,9 @@
                     </div>
                     <span class="text-emerald-400 font-bold bg-emerald-950 px-2.5 py-1 rounded-full text-[10px]">100% Success</span>
                 </div>
-
-                <div class="glass-card p-3 rounded-2xl border border-zinc-800 space-y-2">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[9px] bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded-md font-bold">#TRIP-9912</span>
-                            <p class="text-xs font-bold mt-1">Whitefield ➔ MG Road</p>
-                        </div>
-                        <span class="font-black text-sm text-[#FF5722]">₹450</span>
-                    </div>
-                </div>
             </div>
 
-            <!-- TAB 3: WALLET -->
+            <!-- WALLET TAB -->
             <div id="tab-wallet" class="hidden p-4 space-y-4 pb-6">
                 <div class="glass-card p-4 rounded-3xl border border-[#FF5722]/40 text-center space-y-2">
                     <p class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">Available Balance</p>
@@ -278,7 +199,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: PROFILE -->
+            <!-- PROFILE TAB -->
             <div id="tab-profile" class="hidden p-4 space-y-4 pb-6">
                 <div class="glass-card p-4 rounded-3xl border border-zinc-800 text-center space-y-2">
                     <h2 class="font-black text-base text-white">Ramesh Kumar</h2>
@@ -298,30 +219,25 @@
             <button onclick="closeModal('sosConfirmModal')" class="w-full bg-zinc-900 text-zinc-400 font-bold py-2.5 rounded-2xl text-xs">CANCEL</button>
         </div>
 
-        <div id="rateModal" class="hidden absolute inset-0 bg-black/90 backdrop-blur-md z-50 p-6 flex flex-col justify-center text-center space-y-3">
-            <h3 class="font-black text-white text-sm">Rate Customer Experience</h3>
-            <button onclick="finishCustomerRating()" class="w-full btn-orange text-black font-black py-3 rounded-2xl text-xs">SUBMIT RATING & DONE</button>
-        </div>
-
         <!-- BOTTOM NAV -->
         <div class="p-2 border-t border-zinc-800/80 bg-[#0A0A0C] grid grid-cols-4 gap-1 text-center text-[10px] font-bold z-40 shrink-0">
             <button id="nav-home" onclick="switchTab('home')" class="py-1.5 text-[#FF5722] flex flex-col items-center">
                 <span class="text-sm">🏠</span><span>Home</span>
             </button>
-            <button id="nav-trips" onclick="switchTab('trips')" class="py-1.5 text-zinc-500 hover:text-white flex flex-col items-center">
+            <button id="nav-trips" onclick="switchTab('trips')" class="py-1.5 text-zinc-500 flex flex-col items-center">
                 <span class="text-sm">📜</span><span>Trips</span>
             </button>
-            <button id="nav-wallet" onclick="switchTab('wallet')" class="py-1.5 text-zinc-500 hover:text-white flex flex-col items-center">
+            <button id="nav-wallet" onclick="switchTab('wallet')" class="py-1.5 text-zinc-500 flex flex-col items-center">
                 <span class="text-sm">💰</span><span>Wallet</span>
             </button>
-            <button id="nav-profile" onclick="switchTab('profile')" class="py-1.5 text-zinc-500 hover:text-white flex flex-col items-center">
+            <button id="nav-profile" onclick="switchTab('profile')" class="py-1.5 text-zinc-500 flex flex-col items-center">
                 <span class="text-sm">👤</span><span>Profile</span>
             </button>
         </div>
 
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT & FIREBASE REALTIME LISTENER -->
     <script>
         function sendDriverOtp() {
             var phone = document.getElementById('driverPhone').value;
@@ -343,35 +259,10 @@
             document.getElementById('driverLoginStep1').classList.remove('hidden');
         }
 
-        function playAlertSound() {
-            try {
-                var ctx = new (window.AudioContext || window.webkitAudioContext)();
-                var osc = ctx.createOscillator();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(880, ctx.currentTime);
-                osc.connect(ctx.destination);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.3);
-            } catch(e){}
-        }
-
         var driverMap = L.map('driverMap', { zoomControl: false }).setView([12.9716, 77.5946], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(driverMap);
         L.marker([12.9716, 77.5946]).addTo(driverMap);
 
-        var surgeCircle = null;
-        function toggleSurgeHeatmap() {
-            if(surgeCircle) {
-                driverMap.removeLayer(surgeCircle);
-                surgeCircle = null;
-                alert('Surge Overlay Removed');
-            } else {
-                surgeCircle = L.circle([12.9784, 77.6408], { color: '#FF5722', fillColor: '#FF3D00', fillOpacity: 0.35, radius: 1200 }).addTo(driverMap);
-                alert('🔥 Indiranagar Surge Zone (1.3x) Highlighted on Map!');
-            }
-        }
-
-        function recenterMap() { driverMap.setView([12.9716, 77.5946], 13); }
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function triggerEmergencyAlert() { closeModal('sosConfirmModal'); alert('🚨 SOS CONFIRMED!'); }
@@ -402,129 +293,93 @@
             if(isOnline) {
                 dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
                 text.innerText = "ONLINE";
-                text.className = "text-[10px] font-black text-emerald-400 tracking-wider";
                 btn.className = "flex items-center space-x-1.5 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-full transition active:scale-95";
                 offlineDisplay.classList.add('hidden');
-                setTripStep('searching');
             } else {
                 dot.className = "w-2 h-2 rounded-full bg-rose-500";
                 text.innerText = "OFFLINE";
-                text.className = "text-[10px] font-black text-rose-400 tracking-wider";
                 btn.className = "flex items-center space-x-1.5 bg-rose-950/90 border border-rose-500/40 px-3 py-1.5 rounded-full transition active:scale-95";
-                
-                document.getElementById('card-searching').classList.add('hidden');
-                document.getElementById('card-incoming').classList.add('hidden');
-                document.getElementById('card-navigating').classList.add('hidden');
-                document.getElementById('card-otp').classList.add('hidden');
-                document.getElementById('card-delivering').classList.add('hidden');
                 offlineDisplay.classList.remove('hidden');
             }
         }
-
-        function setTripStep(stepName) {
-            document.getElementById('card-searching').classList.add('hidden');
-            document.getElementById('card-incoming').classList.add('hidden');
-            document.getElementById('card-navigating').classList.add('hidden');
-            document.getElementById('card-otp').classList.add('hidden');
-            document.getElementById('card-delivering').classList.add('hidden');
-
-            if(stepName === 'searching') document.getElementById('card-searching').classList.remove('hidden');
-            if(stepName === 'incoming') document.getElementById('card-incoming').classList.remove('hidden');
-            if(stepName === 'navigating') document.getElementById('card-navigating').classList.remove('hidden');
-            if(stepName === 'otp') document.getElementById('card-otp').classList.remove('hidden');
-            if(stepName === 'delivering') document.getElementById('card-delivering').classList.remove('hidden');
-        }
-
-        function simulateOrderArrival() { playAlertSound(); setTripStep('incoming'); }
-        function declineOrder() { alert('Order Declined.'); setTripStep('searching'); }
-        function verifyCustomerOtp() { setTripStep('delivering'); }
-        function openRateCustomerModal() { document.getElementById('rateModal').classList.remove('hidden'); }
-        function finishCustomerRating() { document.getElementById('rateModal').classList.add('hidden'); alert('🎉 Ride Completed!'); setTripStep('searching'); }
     </script>
+
     <script type="module">
-    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
 
-    const db = getDatabase(); 
-    const ordersRef = ref(db, 'orders');
+        const db = getDatabase(); 
+        const ordersRef = ref(db, 'orders');
 
-    onValue(ordersRef, (snapshot) => {
-    const data = snapshot.val();
-    const container = document.getElementById('ordersListContainer');
-    
-    if (!data) {
-        if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
-        return;
-    }
+        onValue(ordersRef, (snapshot) => {
+            const data = snapshot.val();
+            const container = document.getElementById('ordersListContainer');
+            
+            if (!data) {
+                if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
+                return;
+            }
 
-    let html = '';
-    
-    // यहाँ हमने ऑर्डर्स को सॉर्ट (Sort) कर दिया है ताकि नए ऑर्डर्स और एक्टिव राइड ऊपर रहें
-    const sortedKeys = Object.keys(data).sort((a, b) => {
-        const orderA = data[a];
-        const orderB = data[b];
-        // अगर कोई आर्डर ACCEPTED है, तो उसे सबसे ऊपर रखेंगे
-        if (orderA.status === "ACCEPTED" && orderB.status !== "ACCEPTED") return -1;
-        if (orderA.status !== "ACCEPTED" && orderB.status === "ACCEPTED") return 1;
-        return 0;
-    });
+            let html = '';
+            
+            const sortedKeys = Object.keys(data).sort((a, b) => {
+                const orderA = data[a];
+                const orderB = data[b];
+                if (orderA.status === "ACCEPTED" && orderB.status !== "ACCEPTED") return -1;
+                if (orderA.status !== "ACCEPTED" && orderB.status === "ACCEPTED") return 1;
+                return 0;
+            });
 
-    sortedKeys.forEach(orderId => {
-        const order = data[orderId];
-        
-        if(order.status === "PENDING") {
-            html += `
-                <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
-                        <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
-                    </div>
-                    <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                    <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
-                    <div class="flex space-x-2 mt-3">
-                        <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
-                            REJECT
-                        </button>
-                        <button onclick="updateOrderStatus('${orderId}', 'ACCEPTED')" class="w-1/2 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
-                            ACCEPT RIDE
-                        </button>
-                    </div>
-                </div>
-            `;
-        } 
-        else if(order.status === "ACCEPTED") {
-            html += `
-                <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
-                        <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
-                    </div>
-                    <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                    <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
-                        COMPLETE RIDE
-                    </button>
-                </div>
-            `;
-        }
-    });
-    
-    if(container) {
-        container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
-    }
-});
-        
-        if(container) {
-            container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
-        }
-    });
-
-    // डेटाबेस में आर्डर का स्टेटस अपडेट करने का कॉमन फंक्शन
-    window.updateOrderStatus = function(orderId, newStatus) {
-        update(ref(db, 'orders/' + orderId), {
-            status: newStatus
-        }).then(() => {
-            alert("Order status updated to: " + newStatus);
+            sortedKeys.forEach(orderId => {
+                const order = data[orderId];
+                
+                if(order.status === "PENDING") {
+                    html += `
+                        <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2 text-left">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
+                                <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                            <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
+                            <div class="flex space-x-2 mt-3">
+                                <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
+                                    REJECT
+                                </button>
+                                <button onclick="updateOrderStatus('${orderId}', 'ACCEPTED')" class="w-1/2 py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
+                                    ACCEPT RIDE
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } 
+                else if(order.status === "ACCEPTED") {
+                    html += `
+                        <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2 text-left">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
+                                <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                            <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
+                                COMPLETE RIDE
+                            </button>
+                        </div>
+                    `;
+                }
+            });
+            
+            if(container) {
+                container.innerHTML = html || "<p class='text-zinc-400 p-4'>No active or pending orders.</p>";
+            }
         });
-    }
-</script>
+
+        window.updateOrderStatus = function(orderId, newStatus) {
+            update(ref(db, 'orders/' + orderId), {
+                status: newStatus
+            }).then(() => {
+                console.log("Order status updated to: " + newStatus);
+            });
+        }
+    </script>
 </body>
 </html>
