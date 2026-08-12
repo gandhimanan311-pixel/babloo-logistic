@@ -38,10 +38,9 @@
             timestamp: Date.now()
         };
 
-        const reverseTime = String(9999999999999 - Date.now());
-const uniqueKey = "A_" + reverseTime;
-        orderData.orderId = orderId; 
-        set(ref(db, 'orders/' + uniqueKey), orderData);
+        const uniqueKey = "order_" + Date.now();
+orderData.orderId = orderId;
+set(ref(db, 'orders/' + uniqueKey), orderData);
         
         const searchingModal = document.getElementById('searchingModal');
         if(searchingModal) searchingModal.classList.remove('hidden');
