@@ -187,7 +187,7 @@
 
                 <!-- SEARCHING STATE -->
                 <div id="card-searching" class="space-y-3">
-                    <div class="glass-card p-4 rounded-3xl border border-zinc-800/80 text-center relative overflow-hidden space-y-3">
+                    <div id="orderListContainer" class="glass-card p-4 rounded-3xl border border-zinc-800/80 text-center relative overflow-hidden space-y-3">
                         <div class="relative w-16 h-16 mx-auto flex items-center justify-center my-1">
                             <div class="absolute inset-0 rounded-full bg-[#FF5722]/20 border border-[#FF5722]/40 radar-ring"></div>
                             <div class="w-12 h-12 rounded-full bg-zinc-900 border border-[#FF5722] flex items-center justify-center text-xl shadow-lg z-10">📡</div>
@@ -447,5 +447,57 @@
         function openRateCustomerModal() { document.getElementById('rateModal').classList.remove('hidden'); }
         function finishCustomerRating() { document.getElementById('rateModal').classList.add('hidden'); alert('🎉 Ride Completed!'); setTripStep('searching'); }
     </script>
+    <script type="module">
+    import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+    // यहाँ हम Firebase का Database एक्सेस कर रहे हैं
+    const db = getDatabase(); 
+
+    // यह कोड डेटाबेस से लाइव ऑर्डर्स को ऑटोमैटिकली उठाता रहेगा
+    const ordersRef = ref(db, 'orders');
+    onValue(ordersRef, (snapshot) => {
+        const data = snapshot.val();
+        // यहाँ अपनी उस ID का नाम लिखें जो ऑर्डर्स दिखाने वाले बॉक्स की है
+        const container = document.getElementById('ordersListContainer'); 
+        
+        if (!data) {
+            if(container) container.innerHTML = "<p class='text-zinc-400 p-4'>No pending orders right now.</p>";
+            return;
+        }
+
+        let html = '';
+        Object.keys(data).forEach(orderId => {
+            const order = data[orderId];
+            if(order.status === "PENDING") {
+                html += `
+                    <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-amber-400 font-bold">${order.orderId}</span>
+                            <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
+                        </div>
+                        <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                        <p class="text-xs text-zinc-400 mb-3">Customer: ${order.customerName}</p>
+                        <button onclick="acceptOrder('${orderId}')" class="w-full py-2 bg-emerald-500 hover:bg-emerald-600 text-black font-bold rounded-xl text-sm transition">
+                            ACCEPT RIDE
+                        </button>
+                    </div>
+                `;
+            }
+        });
+        
+        if(container) {
+            container.innerHTML = html || "<p class='text-zinc-400 p-4'>No pending orders.</p>";
+        }
+    });
+
+    // आर्डर एक्सेप्ट करने का फंक्शन
+    window.acceptOrder = function(orderId) {
+        update(ref(db, 'orders/' + orderId), {
+            status: "ACCEPTED"
+        }).then(() => {
+            alert("Ride Accepted! Now navigate to pickup.");
+        });
+    }
+</script>
 </body>
 </html>
