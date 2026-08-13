@@ -1,23 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
-
-  // Your web app's Firebase configuration
-  const firebaseConfig = {
-    apiKey: "AIzaSyAjwqqvIWB4X-YnRvtnm5iu186k7F9okc8",
-    authDomain: "babloo-logistic.firebaseapp.com",
-    projectId: "babloo-logistic",
-    storageBucket: "babloo-logistic.firebasestorage.app",
-    messagingSenderId: "786182652878",
-    appId: "1:786182652878:web:1a275fb79220a5489ee19f"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BABLOO Partner Pro - Driver Console</title>
@@ -38,13 +21,13 @@
 
         .radar-pulse { animation: radar 2s infinite ease-out; }
         @keyframes radar { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.03); opacity: 1; } 100% { transform: scale(0.95); opacity: 0.8; } }
-    /* आर्डर कार्ड के बटनों को अपनी जगह पर स्थिर रखने के लिए */
-.order-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 100%;
-}
+        
+        .order-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
     </style>
 </head>
 <body class="flex justify-center items-center min-h-screen p-0 sm:p-4 bg-black">
@@ -122,9 +105,9 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <button id="dutyToggleBtn" onclick="toggleDuty()" class="flex items-center space-x-1.5 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-full transition active:scale-95">
-                      <span id="dutyDot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
-                      <span id="dutyText" class="text-[10px] font-black text-zinc-500">OFF DUTY</span>
+                    <button id="dutyToggleBtn" onclick="toggleDuty()" class="flex items-center space-x-1.5 bg-zinc-900 border border-zinc-700 px-3 py-1.5 rounded-full transition">
+                        <span id="dutyDot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+                        <span id="dutyText" class="text-[10px] font-black text-zinc-500">OFF DUTY</span>
                     </button>
                 </div>
             </div>
@@ -164,12 +147,6 @@
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
                         <span class="text-emerald-400">High Booking Zone: Indiranagar</span>
                     </div>
-                </div>
-
-                <div id="offlineDisplay" class="hidden glass-card p-6 rounded-3xl text-center space-y-2 border border-zinc-800/80">
-                    <div class="text-4xl">😴</div>
-                    <h2 class="font-black text-sm">Duty is Turned Off</h2>
-                    <p class="text-[10px] text-zinc-400">Turn duty ON from top right button to receive trip requests.</p>
                 </div>
 
                 <!-- REALTIME ORDERS LIST CONTAINER -->
@@ -244,9 +221,31 @@
 
     </div>
 
-    <!-- JAVASCRIPT & FIREBASE REALTIME LISTENER -->
-    <script>
-        function sendDriverOtp() {
+    <!-- SINGLE UNIFIED FIREBASE & APP SCRIPT -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAjwqqvIWB4X-YnRvtnm5iu186k7F9okc8",
+            authDomain: "babloo-logistic.firebaseapp.com",
+            projectId: "babloo-logistic",
+            storageBucket: "babloo-logistic.firebasestorage.app",
+            messagingSenderId: "786182652878",
+            appId: "1:786182652878:web:1a275fb79220a5489ee19f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- MAP SETUP ---
+        var driverMap = L.map('driverMap', { zoomControl: false }).setView([12.9716, 77.5946], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(driverMap);
+        L.marker([12.9716, 77.5946]).addTo(driverMap);
+
+        // --- GLOBAL UI & LOGIN FUNCTIONS ---
+        window.sendDriverOtp = function() {
             var phone = document.getElementById('driverPhone').value;
             if(phone && phone.length === 10) {
                 document.getElementById('driverLoginStep1').classList.add('hidden');
@@ -254,32 +253,25 @@
             } else { 
                 alert('Please enter valid 10-digit mobile number.'); 
             }
-        }
+        };
 
-        function verifyDriverLogin() {
-    document.getElementById('driverLoginOverlay').classList.add('hidden');
-    
-    // लॉगिन होते ही ड्राइवर को डेटाबेस में OFFLINE कर दें
-    const driverId = "driver_101"; // यहाँ ड्राइवर का आईडी
-    const db = getDatabase();
-    update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
-}
+        window.verifyDriverLogin = function() {
+            document.getElementById('driverLoginOverlay').classList.add('hidden');
+            const driverId = "driver_101";
+            update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
+        };
 
-        function logoutDriver() {
+        window.logoutDriver = function() {
             document.getElementById('driverLoginOverlay').classList.remove('hidden');
             document.getElementById('driverLoginStep2').classList.add('hidden');
             document.getElementById('driverLoginStep1').classList.remove('hidden');
-        }
+        };
 
-        var driverMap = L.map('driverMap', { zoomControl: false }).setView([12.9716, 77.5946], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(driverMap);
-        L.marker([12.9716, 77.5946]).addTo(driverMap);
+        window.openModal = function(id) { document.getElementById(id).classList.remove('hidden'); };
+        window.closeModal = function(id) { document.getElementById(id).classList.add('hidden'); };
+        window.triggerEmergencyAlert = function() { closeModal('sosConfirmModal'); alert('🚨 SOS CONFIRMED!'); };
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function triggerEmergencyAlert() { closeModal('sosConfirmModal'); alert('🚨 SOS CONFIRMED!'); }
-
-        function switchTab(tabName) {
+        window.switchTab = function(tabName) {
             document.getElementById('tab-home').classList.add('hidden');
             document.getElementById('tab-trips').classList.add('hidden');
             document.getElementById('tab-wallet').classList.add('hidden');
@@ -292,75 +284,63 @@
 
             document.getElementById('tab-' + tabName).classList.remove('hidden');
             document.getElementById('nav-' + tabName).className = "py-1.5 text-[#FF5722] flex flex-col items-center";
+        };
+
+        // --- DUTY ON/OFF & GPS TRACKING ---
+        let isOnline = false; 
+        let watchId = null;
+
+        window.toggleDuty = function() {
+            isOnline = !isOnline;
+            
+            var dot = document.getElementById('dutyDot');
+            var text = document.getElementById('dutyText');
+            const driverId = "driver_101"; 
+
+            if (isOnline) {
+                if(dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+                if(text) {
+                    text.innerText = "ON DUTY";
+                    text.className = "text-[10px] font-black text-emerald-400";
+                }
+                
+                startLiveTracking(driverId);
+                update(ref(db, 'drivers/' + driverId), { status: "ONLINE" });
+                console.log("Duty turned ON");
+            } else {
+                if(dot) dot.className = "w-2 h-2 rounded-full bg-zinc-500";
+                if(text) {
+                    text.innerText = "OFF DUTY";
+                    text.className = "text-[10px] font-black text-zinc-500";
+                }
+                
+                if (navigator.geolocation && watchId !== null) {
+                    navigator.geolocation.clearWatch(watchId);
+                    watchId = null;
+                }
+                update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
+                console.log("Duty turned OFF");
+            }
+        };
+
+        function startLiveTracking(driverId) {
+            if (navigator.geolocation) {
+                if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+                
+                watchId = navigator.geolocation.watchPosition((position) => {
+                    update(ref(db, 'drivers/' + driverId), {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                        lastUpdated: Date.now()
+                    });
+                }, (error) => {
+                    console.error("GPS Error:", error);
+                }, { enableHighAccuracy: true });
+            }
         }
 
-    let isOnline = false; 
-let watchId = null;
-
-// यह ग्लोबल फंक्शन बटन से जुड़ेगा
-window.toggleDuty = function() {
-    isOnline = !isOnline;
-    
-    var dot = document.getElementById('dutyDot');
-    var text = document.getElementById('dutyText');
-    var btn = document.getElementById('dutyToggleBtn');
-    
-    const driverId = "driver_101"; 
-    const db = getDatabase();
-
-    if (isOnline) {
-        // --- जब ऑन करें ---
-        if(dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-        if(text) {
-            text.innerText = "ON DUTY";
-            text.className = "text-[10px] font-black text-emerald-400";
-        }
-        
-        startLiveTracking(driverId);
-        update(ref(db, 'drivers/' + driverId), { status: "ONLINE" });
-        console.log("Duty turned ON");
-    } else {
-        // --- जब ऑफ करें ---
-        if(dot) dot.className = "w-2 h-2 rounded-full bg-zinc-500";
-        if(text) {
-            text.innerText = "OFF DUTY";
-            text.className = "text-[10px] font-black text-zinc-500";
-        }
-        
-        if (navigator.geolocation && watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-        }
-        update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
-        console.log("Duty turned OFF");
-    }
-};
-
-function startLiveTracking(driverId) {
-    if (navigator.geolocation) {
-        if (watchId !== null) navigator.geolocation.clearWatch(watchId);
-        
-        watchId = navigator.geolocation.watchPosition((position) => {
-            const db = getDatabase();
-            update(ref(db, 'drivers/' + driverId), {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                lastUpdated: Date.now()
-            });
-        }, (error) => {
-            console.error("GPS Error:", error);
-        }, { enableHighAccuracy: true });
-    }
-}
-    </script>
-
-    <script type="module">
-        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js";
-
-        const db = getDatabase(); 
+        // --- REALTIME ORDERS LISTENER ---
         const ordersRef = ref(db, 'orders');
-
-        // यह रियल-टाइम लिसनर बिना रिफ्रेश किए अपने आप आर्डर लाएगा
         onValue(ordersRef, (snapshot) => {
             const data = snapshot.val();
             const container = document.getElementById('ordersListContainer');
@@ -378,8 +358,6 @@ function startLiveTracking(driverId) {
             }
 
             let html = '';
-            
-            // ऑर्डर्स को सॉर्ट करें ताकि एक्सेप्टेड या पेंडिंग सबसे ऊपर दिखें
             const sortedKeys = Object.keys(data).sort((a, b) => {
                 const orderA = data[a];
                 const orderB = data[b];
@@ -398,11 +376,11 @@ function startLiveTracking(driverId) {
                     html += `
                         <div class="bg-[#121218] p-4 rounded-2xl border border-zinc-800 mb-3 shadow-lg space-y-2 text-left animate-pulse order-card">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-amber-400 font-bold">🔔 NEW ORDER: ${order.orderId}</span>
-                                <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare}</span>
+                                <span class="text-xs text-amber-400 font-bold">🔔 NEW ORDER: ${order.orderId || orderId}</span>
+                                <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded">₹${order.fare || 120}</span>
                             </div>
-                            <p class="text-sm text-white font-medium">Route: ${order.route}</p>
-                            <p class="text-xs text-zinc-400">Customer: ${order.customerName}</p>
+                            <p class="text-sm text-white font-medium">Route: ${order.route || 'Tech Square'}</p>
+                            <p class="text-xs text-zinc-400">Customer: ${order.customerName || 'Customer'}</p>
                             <div class="flex space-x-2 mt-3">
                                 <button onclick="updateOrderStatus('${orderId}', 'REJECTED')" class="w-1/2 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-sm transition">
                                     REJECT
@@ -419,10 +397,10 @@ function startLiveTracking(driverId) {
                     html += `
                         <div class="bg-[#121218] p-4 rounded-2xl border border-sky-800 mb-3 shadow-lg space-y-2 text-left order-card">
                             <div class="flex justify-between items-center">
-                                <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId}</span>
+                                <span class="text-xs text-sky-400 font-bold">Active: ${order.orderId || orderId}</span>
                                 <span class="text-xs bg-sky-950 text-sky-400 px-2 py-0.5 rounded">On the way</span>
                             </div>
-                            <p class="text-sm text-white font-medium">Route: ${order.route}</p>
+                            <p class="text-sm text-white font-medium">Route: ${order.route || 'Tech Square'}</p>
                             <button onclick="updateOrderStatus('${orderId}', 'COMPLETED')" class="w-full py-2 bg-sky-500 hover:bg-sky-600 text-black font-bold rounded-xl text-sm transition">
                                 COMPLETE RIDE
                             </button>
@@ -449,8 +427,7 @@ function startLiveTracking(driverId) {
             }).then(() => {
                 console.log("Status updated successfully to: " + newStatus);
             });
-        }
-    
+        };
     </script>
 </body>
 </html>
