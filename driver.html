@@ -239,10 +239,32 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // --- MAP SETUP ---
-        var driverMap = L.map('driverMap', { zoomControl: false }).setView([12.9716, 77.5946], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(driverMap);
-        L.marker([12.9716, 77.5946]).addTo(driverMap);
+        // --- MAP SETUP (Live Location Enabled) ---
+var driverMap = L.map('driverMap', { zoomControl: false }).setView([23.6047, 72.9692], 13); // शुरुआत के लिए हिम्मतनगर या डिफ़ॉल्ट सेंटर
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(driverMap);
+
+var driverMarker = null;
+
+// ब्राउज़र से लाइव लोकेशन लेकर मैप और मार्कर को अपडेट करना
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition((position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const currentLatLng = [lat, lng];
+
+        // अगर मार्कर पहले से है तो उसकी जगह बदलें, नहीं तो नया बनाएं
+        if (driverMarker) {
+            driverMarker.setLatLng(currentLatLng);
+        } else {
+            driverMarker = L.marker(currentLatLng).addTo(driverMap);
+        }
+
+        // मैप को ड्राइवर की असली लोकेशन पर फोकस करें
+        driverMap.setView(currentLatLng, 15);
+    }, (error) => {
+        console.error("GPS Error in Map:", error);
+    }, { enableHighAccuracy: true });
+}
 
         // --- GLOBAL UI & LOGIN FUNCTIONS ---
         window.sendDriverOtp = function() {
