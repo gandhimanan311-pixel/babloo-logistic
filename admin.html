@@ -106,11 +106,15 @@
             tableBody.innerHTML = '';
 
             if (data) {
-                // उल्टे क्रम में दिखाना ताकि नए ऑर्डर ऊपर रहें
-                const orderKeys = Object.keys(data).reverse();
+    // सभी ऑर्डर्स को उनके टाइमस्टैम्प (सच्चे समय) के हिसाब से छांटकर सबसे नया ऊपर ला रहे हैं
+    const orderKeys = Object.keys(data).sort((a, b) => {
+        const timeA = data[a].timestamp || 0;
+        const timeB = data[b].timestamp || 0;
+        return timeB - timeA; // नए समय वाले को सबसे ऊपर रखेंगे
+    });
 
-                orderKeys.forEach((key) => {
-                    const order = data[key];
+    orderKeys.forEach((key) => {
+        const order = data[key];
                     let statusBadge = `<span class="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-800 rounded-full text-[10px] font-bold">PENDING</span>`;
                     
                     if(order.status === "ASSIGNED") {
