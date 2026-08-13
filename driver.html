@@ -123,8 +123,8 @@
 
                 <div class="flex items-center space-x-2">
                     <button id="dutyToggleBtn" onclick="toggleDuty()" class="flex items-center space-x-1.5 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-full transition active:scale-95">
-                        <span id="dutyDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span id="dutyText" class="text-[10px] font-black text-emerald-400 tracking-wider">ONLINE</span>
+                      <span id="dutyDot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+                      <span id="dutyText" class="text-[10px] font-black text-zinc-500">OFF DUTY</span>
                     </button>
                 </div>
             </div>
@@ -256,9 +256,14 @@
             }
         }
 
-        function verifyDriverLogin() { 
-            document.getElementById('driverLoginOverlay').classList.add('hidden'); 
-        }
+        function verifyDriverLogin() {
+    document.getElementById('driverLoginOverlay').classList.add('hidden');
+    
+    // लॉगिन होते ही ड्राइवर को डेटाबेस में OFFLINE कर दें
+    const driverId = "driver_101"; // यहाँ ड्राइवर का आईडी
+    const db = getDatabase();
+    update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
+}
 
         function logoutDriver() {
             document.getElementById('driverLoginOverlay').classList.remove('hidden');
@@ -289,26 +294,64 @@
             document.getElementById('nav-' + tabName).className = "py-1.5 text-[#FF5722] flex flex-col items-center";
         }
 
-        var isOnline = true;
-        function toggleDuty() {
-            isOnline = !isOnline;
-            var dot = document.getElementById('dutyDot');
-            var text = document.getElementById('dutyText');
-            var btn = document.getElementById('dutyToggleBtn');
-            var offlineDisplay = document.getElementById('offlineDisplay');
+    var isOnline = false; 
+    let watchId = null; // जीपीएस को कंट्रोल करने के लिए
 
-            if(isOnline) {
-                dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-                text.innerText = "ONLINE";
-                btn.className = "flex items-center space-x-1.5 bg-emerald-950/90 border border-emerald-500/40 px-3 py-1.5 rounded-full transition active:scale-95";
-                offlineDisplay.classList.add('hidden');
-            } else {
-                dot.className = "w-2 h-2 rounded-full bg-rose-500";
-                text.innerText = "OFFLINE";
-                btn.className = "flex items-center space-x-1.5 bg-rose-950/90 border border-rose-500/40 px-3 py-1.5 rounded-full transition active:scale-95";
-                offlineDisplay.classList.remove('hidden');
-            }
+    function toggleDuty() {
+        isOnline = !isOnline;
+        var dot = document.getElementById('dutyDot');
+        var text = document.getElementById('dutyText');
+        var btn = document.getElementById('dutyToggleBtn');
+        var offlineDisplay = document.getElementById('offlineDisplay');
+        const driverId = "driver_101"; // यहाँ अपना ड्राइवर आईडी डालें
+        const db = getDatabase();
+
+    if (isOnline) {
+        // --- जब ड्यूटी ON करें ---
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        text.innerText = "ONLINE";
+        btn.className = "flex items-center space-x-1.5 bg-emerald-950/90 border border-emerald-700 px-3 py-1.5 rounded-full";
+        if (offlineDisplay) offlineDisplay.classList.add('hidden');
+        
+        // 1. यहाँ से जीपीएस ट्रैकिंग चालू होगी
+        startLiveTracking(driverId);
+        
+        // 2. डेटाबेस में स्टेटस ONLINE अपडेट होगा
+        update(ref(db, 'drivers/' + driverId), { status: "ONLINE" });
+    } else {
+        // --- जब ड्यूटी OFF करें ---
+        dot.className = "w-2 h-2 rounded-full bg-rose-500";
+        text.innerText = "OFFLINE";
+        btn.className = "flex items-center space-x-1.5 bg-rose-950/90 border border-rose-700 px-3 py-1.5 rounded-full";
+        if (offlineDisplay) offlineDisplay.classList.remove('hidden');
+        
+        // 1. यहाँ से जीपीएस ट्रैकिंग बंद हो जाएगी
+        if (navigator.geolocation && watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
         }
+        
+        // 2. डेटाबेस में स्टेटस OFFLINE अपडेट होगा
+        update(ref(db, 'drivers/' + driverId), { status: "OFFLINE" });
+    }
+}
+
+// जीपीएस लोकेशन ट्रैक करने का फंक्शन (यह भी इसी के साथ रहेगा)
+function startLiveTracking(driverId) {
+    if (navigator.geolocation) {
+        if (watchId !== null) {
+            navigator.geolocation.clearWatch(watchId);
+        }
+        watchId = navigator.geolocation.watchPosition((position) => {
+            const db = getDatabase();
+            update(ref(db, 'drivers/' + driverId), {
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+                lastUpdated: Date.now()
+            });
+        }, null, { enableHighAccuracy: true });
+    }
+}
     </script>
 
     <script type="module">
@@ -407,6 +450,7 @@
                 console.log("Status updated successfully to: " + newStatus);
             });
         }
+    
     </script>
 </body>
 </html>
