@@ -52,6 +52,92 @@
             </div>
         </div>
 
+        <!-- NEW MASTER CONTROLS: PRICING & PROMO MANAGER -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- 1. Pricing & Commission Control -->
+            <div class="glass-card p-5 rounded-3xl border border-zinc-800 space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-white">⚙️ Base Pricing & Commission Setup</h3>
+                    <span class="text-[10px] text-orange-400 font-bold">Live App Sync</span>
+                </div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between items-center bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-300 font-bold">Platform Commission (%)</span>
+                        <input type="number" value="20" class="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-center font-bold text-[#FF5722] outline-none">
+                    </div>
+                    <div class="flex justify-between items-center bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-300 font-bold">Bike Per/KM Rate (₹)</span>
+                        <input type="number" value="15" class="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-center font-bold text-[#FF5722] outline-none">
+                    </div>
+                    <div class="flex justify-between items-center bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <span class="text-zinc-300 font-bold">Auto Per/KM Rate (₹)</span>
+                        <input type="number" value="25" class="w-16 bg-zinc-900 border border-zinc-700 rounded-lg px-2 py-1 text-center font-bold text-[#FF5722] outline-none">
+                    </div>
+                </div>
+                <button onclick="alert('Master Pricing Updated Successfully Across Customer App!')" class="w-full btn-orange text-black font-black py-2.5 rounded-xl text-[10px] uppercase tracking-wider">SAVE PRICING CONFIG</button>
+            </div>
+
+            <!-- 2. Promo Code & Banner Manager -->
+            <div class="glass-card p-5 rounded-3xl border border-zinc-800 space-y-3 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-white">🏷️ Create & Manage Promo Codes</h3>
+                        <span class="text-[10px] text-emerald-400 font-bold">Active: BABLOO</span>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex space-x-2">
+                            <input type="text" id="newPromoCode" placeholder="Enter Code (e.g. FESTIVE50)" class="w-full bg-black/80 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white uppercase outline-none">
+                            <input type="number" id="newPromoDisc" placeholder="Disc %" class="w-20 bg-black/80 border border-zinc-700 rounded-xl px-2 py-2 text-xs text-white outline-none text-center">
+                        </div>
+                        <div class="bg-black/60 p-2.5 rounded-xl border border-zinc-800 flex justify-between items-center">
+                            <div>
+                                <p class="font-bold text-white">BABLOO (Default)</p>
+                                <p class="text-[9px] text-zinc-400">10% discount on all bookings</p>
+                            </div>
+                            <span class="text-[10px] bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="addNewPromo()" class="w-full bg-zinc-900 border border-zinc-700 hover:border-[#FF5722] text-white font-black py-2.5 rounded-xl text-[10px] uppercase tracking-wider">ADD NEW PROMO CODE</button>
+            </div>
+        </div>
+
+        <!-- ZONE HEATMAP & EMERGENCY ALERTS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="glass-card p-4 rounded-2xl border border-zinc-800 space-y-2 md:col-span-2 flex flex-col justify-between">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-white">🔥 High Demand City Zones (Heatmap)</h3>
+                    <span class="text-[10px] bg-red-950 text-red-400 border border-red-800 px-2.5 py-0.5 rounded-full font-bold">PEAK HOURS</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div class="bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <p class="text-[10px] text-zinc-400">Indiranagar</p>
+                        <p class="font-black text-emerald-400">42 Requests</p>
+                    </div>
+                    <div class="bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <p class="text-[10px] text-zinc-400">Koramangala</p>
+                        <p class="font-black text-amber-400">36 Requests</p>
+                    </div>
+                    <div class="bg-black/60 p-2.5 rounded-xl border border-zinc-800">
+                        <p class="text-[10px] text-zinc-400">Tech Square</p>
+                        <p class="text-[10px] font-black text-[#FF5722]">28 Requests</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border border-zinc-800 flex flex-col justify-between space-y-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-white">🚨 SOS / Incident Alerts</h3>
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                </div>
+                <div class="bg-black/80 p-2.5 rounded-xl border border-zinc-800 text-[11px] text-zinc-300">
+                    <p class="font-bold text-emerald-400">✔ No active incidents reported</p>
+                    <p class="text-[9px] text-zinc-500 mt-0.5">All 38 active deliveries moving smoothly</p>
+                </div>
+                <button onclick="alert('Broadcasting safety advisory to all online drivers.')" class="w-full bg-zinc-900 border border-zinc-700 hover:border-[#FF5722] text-white py-1.5 rounded-xl text-[10px] font-bold">Broadcast Advisory</button>
+            </div>
+        </div>
+
         <!-- LIVE ORDERS MANAGEMENT TABLE -->
         <div class="glass-card rounded-3xl border border-zinc-800 overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-zinc-800 flex justify-between items-center">
@@ -79,6 +165,48 @@
             </div>
         </div>
 
+        <!-- ACTIVE DELIVERY PARTNERS & FLEET STATUS -->
+        <div class="glass-card rounded-3xl border border-zinc-800 overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-zinc-800 flex justify-between items-center">
+                <h2 class="text-sm font-black uppercase tracking-wider text-white">🛵 Active Delivery Partners & Fleet Status</h2>
+                <span class="text-xs text-orange-400 font-bold">Total Online: 38 Partners</span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-zinc-950/80 text-zinc-400 border-b border-zinc-800 uppercase tracking-wider text-[10px]">
+                            <th class="p-4">Partner Name</th>
+                            <th class="p-4">Vehicle & Number</th>
+                            <th class="p-4">Rating</th>
+                            <th class="p-4">Current Status</th>
+                            <th class="p-4 text-center">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-800/60 font-medium">
+                        <tr class="hover:bg-zinc-900/40 transition">
+                            <td class="p-4 text-white font-bold">Ramesh Kumar <br><span class="text-[10px] text-zinc-500">+91 99887 76655</span></td>
+                            <td class="p-4 text-zinc-300">Loading Auto • <span class="font-bold text-amber-400">KA 01 E 9821</span></td>
+                            <td class="p-4 font-black text-amber-400">★ 4.9</td>
+                            <td class="p-4"><span class="px-2.5 py-1 bg-emerald-950 text-emerald-400 border border-emerald-800 rounded-full text-[10px] font-bold">ON RIDE</span></td>
+                            <td class="p-4 text-center">
+                                <button onclick="alert('Viewing Ramesh Kumar live location & wallet balance.')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-[10px] font-bold">View Details</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-zinc-900/40 transition">
+                            <td class="p-4 text-white font-bold">Suresh Singh <br><span class="text-[10px] text-zinc-500">+91 88776 65544</span></td>
+                            <td class="p-4 text-zinc-300">Bike Delivery • <span class="font-bold text-amber-400">KA 03 M 4412</span></td>
+                            <td class="p-4 font-black text-amber-400">★ 4.8</td>
+                            <td class="p-4"><span class="px-2.5 py-1 bg-blue-950 text-blue-400 border border-blue-800 rounded-full text-[10px] font-bold">AVAILABLE</span></td>
+                            <td class="p-4 text-center">
+                                <button onclick="alert('Viewing Suresh Singh profile.')" class="px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl text-[10px] font-bold">View Details</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <!-- FIREBASE & LIVE SYNC SCRIPT -->
@@ -98,7 +226,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // डेटाबेस से लाइव आर्डर्स सुनना
+        // डेटाबेस से लाइव आर्डर्स सुनना और नए ऑर्डर सबसे ऊपर दिखाना
         const ordersRef = ref(db, 'orders');
         onValue(ordersRef, (snapshot) => {
             const data = snapshot.val();
@@ -106,15 +234,15 @@
             tableBody.innerHTML = '';
 
             if (data) {
-    // सभी ऑर्डर्स को उनके टाइमस्टैम्प (सच्चे समय) के हिसाब से छांटकर सबसे नया ऊपर ला रहे हैं
-    const orderKeys = Object.keys(data).sort((a, b) => {
-        const timeA = data[a].timestamp || 0;
-        const timeB = data[b].timestamp || 0;
-        return timeB - timeA; // नए समय वाले को सबसे ऊपर रखेंगे
-    });
+                // टाइमस्टैम्प के हिसाब से सॉर्ट करना ताकि नया ऑर्डर हमेशा सबसे ऊपर रहे
+                const orderKeys = Object.keys(data).sort((a, b) => {
+                    const timeA = data[a].timestamp || 0;
+                    const timeB = data[b].timestamp || 0;
+                    return timeB - timeA;
+                });
 
-    orderKeys.forEach((key) => {
-        const order = data[key];
+                orderKeys.forEach((key) => {
+                    const order = data[key];
                     let statusBadge = `<span class="px-3 py-1 bg-amber-950 text-amber-400 border border-amber-800 rounded-full text-[10px] font-bold">PENDING</span>`;
                     
                     if(order.status === "ASSIGNED") {
@@ -128,8 +256,8 @@
                             <td class="p-4 font-black text-[#FF5722]">${order.orderId || key}</td>
                             <td class="p-4 text-white">${order.customerName || 'Rahul Sharma'} <br><span class="text-[10px] text-zinc-500">+91 98765 43210</span></td>
                             <td class="p-4 font-bold text-zinc-200">${order.vehicleType || 'Bike'}</td>
-                            <td class="p-4 text-zinc-300">${order.route || 'N/A'}</td>
-                            <td class="p-4 font-black text-amber-400">₹${order.fare || 0}</td>
+                            <td class="p-4 text-zinc-300">${order.route || 'Tech Square ➔'}</td>
+                            <td class="p-4 font-black text-amber-400">₹${order.fare || 120}</td>
                             <td class="p-4">${statusBadge}</td>
                             <td class="p-4 text-center">
                                 <button onclick="assignDriver('${order.orderId || key}')" class="px-4 py-2 btn-orange text-black font-black rounded-xl text-[10px] uppercase tracking-wider hover:opacity-90">Assign Driver</button>
@@ -144,7 +272,17 @@
         });
 
         window.assignDriver = function(orderId) {
-            alert('Order ' + orderId + ' successfully assigned!');
+            alert('Order ' + orderId + ' successfully assigned to nearby partner!');
+        }
+
+        window.addNewPromo = function() {
+            const code = document.getElementById('newPromoCode').value;
+            if(code) {
+                alert('🎉 New Promo Code "' + code.toUpperCase() + '" Created Successfully!');
+                document.getElementById('newPromoCode').value = '';
+            } else {
+                alert('Please enter a valid promo code name.');
+            }
         }
     </script>
 </body>
